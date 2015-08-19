@@ -60,7 +60,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SoftFX.Extended.Net">
-      <HintPath>..\..\..\FRE\SoftFX.Extended.Net.dll</HintPath>
+      <HintPath>..\..\Lib\SoftFX.Extended.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="SoftFX.Lrp">
+      <HintPath>..\..\Lib\SoftFX.Lrp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

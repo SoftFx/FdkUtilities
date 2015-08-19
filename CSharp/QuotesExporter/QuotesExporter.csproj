@@ -33,9 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SoftFX.Extended.Net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\FRE\SoftFX.Extended.Net.dll</HintPath>
+    <Reference Include="SoftFX.Extended.Net">
+      <HintPath>..\..\Lib\SoftFX.Extended.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="SoftFX.Lrp">
+      <HintPath>..\..\Lib\SoftFX.Lrp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
