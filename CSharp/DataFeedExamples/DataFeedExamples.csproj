@@ -73,11 +73,13 @@
     <StartupObject>DataFeedExamples.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SoftFX.Extended.Net">
-      <HintPath>..\..\..\Fdk2R\FdkRLib\Lib\FDK\SoftFX.Extended.Net.dll</HintPath>
+    <Reference Include="SoftFX.Extended.Net, Version=1.0.0.1, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FDK.1.15.231\lib\net40\SoftFX.Extended.Net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="SoftFX.Lrp">
-      <HintPath>..\..\..\Fdk2R\FdkRLib\Lib\FDK\SoftFX.Lrp.dll</HintPath>
+    <Reference Include="SoftFX.Lrp, Version=1.0.1.0, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FDK.1.15.231\lib\net40\SoftFX.Lrp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -95,6 +97,9 @@
     <Compile Include="StorageUpdatingExample.cs" />
     <Compile Include="SymbolInfoExample.cs" />
     <Compile Include="TicksExample.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
