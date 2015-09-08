@@ -7,8 +7,8 @@
     {
         public static void Run()
         {
-            var buidlers = ConnectionStringBuilder.TestConnections("tpdemo.fxopen.com");
-            //var builders = FixConnectionStringBuilder.TestConnections("tpdemo.fxopen.com");
+            var buidlers = ConnectionStringBuilder.TestConnections("ttdemo.fxopen.com");
+            //var builders = FixConnectionStringBuilder.TestConnections("ttdemo.fxopen.com");
             Console.WriteLine("buildes.Length = {0}", buidlers.Length);
         }
     }

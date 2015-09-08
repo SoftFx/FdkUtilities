@@ -8,7 +8,7 @@
         {
             Library.Path = "<FRE>";
 
-            var address = "tpdemo.fxopen.com";
+            var address = "ttdemo.fxopen.com";
             var username = "81000001";
             var password = "F9J76sPk";
 
