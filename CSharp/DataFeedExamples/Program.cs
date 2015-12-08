@@ -8,21 +8,16 @@
         static void Main()
         {
             Library.Path = "<FRE>";
-            /*
             var address = "ttdemo.fxopen.com";
             var username = "59932";
             var password = "8mEx7zZ2";
-            */
             
-            var address = "tp.st.soft-fx.eu";
-            var username = "100057";
-            var password = "123qwe!";
             //Library.WriteFullDumpOnError(@"D:\full.dmp");
 
             //var example = new SymbolInfoExample(address, username, password);
-            //var example = new TicksExample(address, username, password);
+            var example = new TicksExample(address, username, password);
             //var example = new BarsHistoryExample(address, username, password);
-            var example = new StorageTicksHistoryExample(address, username, password);
+            //var example = new StorageTicksHistoryExample(address, username, password);
             //var example = new StorageTicksRangeIteratorHistoryExample(address, username, password);
             //var example = new StorageBarsHistoryExample(address, username, password);
             //var example = new StorageUpdatingExample(address, username, password);
