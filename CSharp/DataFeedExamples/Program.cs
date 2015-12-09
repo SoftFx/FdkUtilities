@@ -7,10 +7,10 @@
     {
         static void Main()
         {
-            Library.Path = "<FRE>";
-            var address = "ttdemo.fxopen.com";
-            var username = "59932";
-            var password = "8mEx7zZ2";
+            //Library.Path = "<FRE>";
+            var address = Settings1.Default.server;
+            var username = Settings1.Default.login;
+            var password = Settings1.Default.password;
             
             //Library.WriteFullDumpOnError(@"D:\full.dmp");
 
