@@ -20,7 +20,7 @@
 
         void StateInfoChanged(object sender, StateInfoEventArgs e)
         {
-            Console.WriteLine("Generation = {0}; Margin = {1}", e.Information.Generation, e.Information.Margin);
+            Console.WriteLine("StateInfo = {0}, Equity = {1}", e.Information.ToString(), e.Information.Equity);
         }
 
         void CloseAll()

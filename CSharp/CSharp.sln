@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2010
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFeedExamples", "DataFeedExamples\DataFeedExamples.csproj", "{088ADE6B-CE03-4804-B37A-DDDA86D05048}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTradeExamples", "DataTradeExamples\DataTradeExamples.csproj", "{AEBCFEF7-81B7-426C-A69F-019F09F5426C}"
@@ -25,8 +27,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{088ADE6B-CE03-4804-B37A-DDDA86D05048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{088ADE6B-CE03-4804-B37A-DDDA86D05048}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{088ADE6B-CE03-4804-B37A-DDDA86D05048}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{088ADE6B-CE03-4804-B37A-DDDA86D05048}.Debug|Any CPU.Build.0 = Debug|x86
 		{088ADE6B-CE03-4804-B37A-DDDA86D05048}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{088ADE6B-CE03-4804-B37A-DDDA86D05048}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AEBCFEF7-81B7-426C-A69F-019F09F5426C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
