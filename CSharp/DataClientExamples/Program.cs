@@ -6,7 +6,7 @@
     {
         static void Main(string[] args)
         {
-            Library.Path = "<FRE>";
+            
             //TestConnectionExample.Run();
             //TestFeedConnectionExample.Run();
             TestTradeConnectionExample.Run();

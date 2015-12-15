@@ -6,11 +6,9 @@
     {
         static void Main(string[] args)
         {
-            Library.Path = "<FRE>";
-
             var address = "ttdemo.fxopen.com";
-            var username = "81000001";
-            var password = "F9J76sPk";
+            var username = "100039";
+            var password = "e2pllch2";
 
             var example = new StateCalculatorExample(address, username, password);
 

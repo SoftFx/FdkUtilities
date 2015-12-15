@@ -49,5 +49,14 @@ namespace DataFeedExamples {
                 return ((string)(this["password"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int OutputInterval {
+            get {
+                return ((int)(this["OutputInterval"]));
+            }
+        }
     }
 }

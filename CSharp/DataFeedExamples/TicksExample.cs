@@ -42,7 +42,7 @@
             internalTimeList.Add((e.SendingTime - e.Tick.CreatingTime).Value.Milliseconds);
             pingTimeList.Add((e.ReceivingTime - e.SendingTime).Value.TotalMilliseconds);
 
-            if (lastStatisticTime == 0 || DateTime.Now.Ticks - lastStatisticTime > TimeSpan.FromSeconds(10).Ticks)
+            if (lastStatisticTime == 0 || DateTime.Now.Ticks - lastStatisticTime > TimeSpan.FromSeconds(Settings1.Default.OutputInterval).Ticks)
             {
                 lastStatisticTime = DateTime.Now.Ticks;
                 Console.WriteLine();

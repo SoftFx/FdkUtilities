@@ -6,7 +6,7 @@
     {
         static void Main()
         {
-            Library.Path = "<FRE>";
+            
 
             string address = "ttdemo.fxopen.com";
             string username = "59932";

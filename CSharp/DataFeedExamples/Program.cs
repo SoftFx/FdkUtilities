@@ -7,7 +7,7 @@
     {
         static void Main()
         {
-            //Library.Path = "<FRE>";
+            //
             var address = Settings1.Default.server;
             var username = Settings1.Default.login;
             var password = Settings1.Default.password;
