@@ -97,13 +97,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SoftFX.Extended.Net, Version=1.17.5827.31041, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\libs\SoftFX.Extended.Net.dll</HintPath>
+    <Reference Include="SoftFX.Extended.Net, Version=1.17.214.0, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
+      <HintPath>..\packages\SoftFX.FDK.1.17.256\lib\net46\SoftFX.Extended.Net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="SoftFX.Lrp, Version=1.0.1.0, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\libs\SoftFX.Lrp.dll</HintPath>
+    <Reference Include="SoftFX.Lrp, Version=1.17.0.0, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
+      <HintPath>..\packages\SoftFX.FDK.1.17.256\lib\net46\SoftFX.Lrp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Settings1.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
