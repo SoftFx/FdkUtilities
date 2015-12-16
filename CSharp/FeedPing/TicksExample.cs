@@ -18,14 +18,10 @@
 
         void OnLogon(object sender, LogonEventArgs e)
         {
-            var symbols = new[]
-            {
-                "EURUSD",
-                "EURJPY",
-            };
-                    
+
+            var symbols = Settings1.Default.SubscribeToSymbols.Split(',');
             // we should subscribe to quotes every time after logon event
-            this.Feed.Server.SubscribeToQuotes(symbols, 3);
+            this.Feed.Server.SubscribeToQuotes(symbols, Settings1.Default.Depth);
         }
 
         protected override void RunExample()
