@@ -57,7 +57,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\Release\</OutputPath>
+    <OutputPath>..\..\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -108,10 +108,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BarsHistoryExample.cs" />
     <Compile Include="Example.cs" />
-    <Compile Include="Histogram.cs" />
-    <Compile Include="ImportQuotesExample.cs" />
     <Compile Include="MathList.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -120,12 +117,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings1.settings</DependentUpon>
     </Compile>
-    <Compile Include="StorageBarsHistoryExample.cs" />
-    <Compile Include="StorageMultithreadingExample.cs" />
-    <Compile Include="StorageTicksHistoryExample.cs" />
-    <Compile Include="StorageTicksRangeIteratorHistoryExample.cs" />
-    <Compile Include="StorageUpdatingExample.cs" />
-    <Compile Include="SymbolInfoExample.cs" />
     <Compile Include="TicksExample.cs" />
   </ItemGroup>
   <ItemGroup>

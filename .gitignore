@@ -2,3 +2,5 @@
 obj
 Debug
 CSharp/packages/FDK*
+Release
+*.user
