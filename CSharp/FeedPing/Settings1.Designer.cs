@@ -58,5 +58,29 @@ namespace DataFeedExamples {
                 return ((int)(this["OutputInterval"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("EURUSD,EURJPY")]
+        public string SubscribeToSymbols {
+            get {
+                return ((string)(this["SubscribeToSymbols"]));
+            }
+            set {
+                this["SubscribeToSymbols"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int Depth {
+            get {
+                return ((int)(this["Depth"]));
+            }
+            set {
+                this["Depth"] = value;
+            }
+        }
     }
 }
