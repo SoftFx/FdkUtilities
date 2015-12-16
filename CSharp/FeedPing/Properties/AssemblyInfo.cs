@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DataFeedClient")]
+[assembly: AssemblyTitle("FeedPing")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SoftFX")]
-[assembly: AssemblyProduct("DataFeedClient")]
+[assembly: AssemblyProduct("FeedPing")]
 [assembly: AssemblyCopyright("Copyright © SoftFX 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
