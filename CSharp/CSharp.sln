@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFeedExamples", "DataFeedExamples\DataFeedExamples.csproj", "{088ADE6B-CE03-4804-B37A-DDDA86D05048}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeedPing", "DataFeedExamples\FeedPing.csproj", "{088ADE6B-CE03-4804-B37A-DDDA86D05048}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuotesDownloader", "QuotesDownloader\QuotesDownloader.csproj", "{0486509B-FE6E-411B-919D-76BB270BC613}"
 EndProject
