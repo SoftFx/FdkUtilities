@@ -118,6 +118,7 @@
       <DependentUpon>Settings1.settings</DependentUpon>
     </Compile>
     <Compile Include="TicksExample.cs" />
+    <Compile Include="TradeExample.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

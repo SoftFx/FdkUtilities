@@ -82,5 +82,17 @@ namespace DataFeedExamples {
                 this["Depth"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int OrdersCount {
+            get {
+                return ((int)(this["OrdersCount"]));
+            }
+            set {
+                this["OrdersCount"] = value;
+            }
+        }
     }
 }
