@@ -113,7 +113,7 @@ namespace DataFeedExamples
             Console.WriteLine();
             Console.WriteLine("{0} SendMarketOrder: {1} {2} {3} at {4}", DateTime.UtcNow.ToString(_datetimeformat), side, volume, symbol, price);
 
-            var tr = this.Trade.Server.SendOrder(_symbols[0], TradeCommand.Market, side, 0.0, 100000, null, null, null, null);
+            var tr = this.Trade.Server.SendOrder(_symbols[0], TradeCommand.Market, side, price, volume, null, null, null, null);
             _positions.Add(tr.OrderId);
         }
 
