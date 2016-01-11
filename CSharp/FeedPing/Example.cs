@@ -259,7 +259,9 @@
 
             if (this.Trade != null)
             {
-                this.Trade.Stop();
+                if (this.Trade.IsStarted)
+                    this.Trade.Stop();
+
                 this.Trade.Dispose();
                 this.Trade = null;
             }

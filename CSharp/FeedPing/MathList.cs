@@ -9,12 +9,14 @@ namespace DataFeedExamples
     internal class MathList
     {
         List<double> listNumbers = new List<double>();
+        public List<double> Numbers { get { return listNumbers; } }
 
         public MathList Clear()
         {
             listNumbers.Clear();
             return this;
         }
+
         public MathList Add(double number)
         {
             listNumbers.Add(number);
@@ -35,6 +37,7 @@ namespace DataFeedExamples
                 result += item / n;
             return result;
         }
+
         private double Sd()
         {
             double result = default(double);
@@ -44,8 +47,5 @@ namespace DataFeedExamples
                 result += (item - mean) * (item - mean) / n;
             return Math.Sqrt(result);
         }
-
-
-
     }
 }

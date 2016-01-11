@@ -15,13 +15,13 @@ namespace DataFeedExamples
         private static bool _stop;
         private static readonly AutoResetEvent TradeIsReady = new AutoResetEvent(false);
         private static readonly AutoResetEvent PositionCreated = new AutoResetEvent(false);
-        private readonly Thread _tradeThread = new Thread(TradeThread);
 
-        MathList _internalTimeList = new MathList();
-        MathList _pingTimeList = new MathList();
+        private readonly Thread _tradeThread = new Thread(TradeThread);
         private AccountInfo _account;
         private string[] _symbols;
         private readonly List<string> _positions = new List<string>();
+        private readonly Dictionary<string, MathList> _results = new Dictionary<string, MathList>();
+        private DateTime _controlTime;
 
         public TradeExample(string address, string username, string password) : base(address, username, password)
         {
@@ -59,7 +59,12 @@ namespace DataFeedExamples
 
         private void OnExecutionReport(object sender, ExecutionReportEventArgs e)
         {
-            Console.WriteLine("{0} ER: {1}", DateTime.UtcNow.ToString(_datetimeformat), ExecutionReportToString(e.Report));
+            DateTime utcNow = DateTime.UtcNow;
+            int delta = (utcNow - _controlTime).Milliseconds;
+            _controlTime = utcNow;
+
+            SetResult(e.Report.OrderId, delta);
+
             if (e.Report.OrderType == TradeRecordType.Position)
                 PositionCreated.Set();
         }
@@ -68,12 +73,20 @@ namespace DataFeedExamples
         {
             _tradeThread.Start(this);
 
-            Console.WriteLine("Press any key to stop");
+            Console.WriteLine("Press any key to stop...");
             Console.ReadKey();
 
             _stop = true;
             _tradeThread.Join();
 
+            Console.WriteLine();
+            foreach (var result in _results)
+            {
+                Console.WriteLine("Id: {0}  {1}\t{2}", result.Key, string.Join(" ", result.Value.Numbers), result.Value);
+            }
+
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
             CloseAll();
         }
 
@@ -81,7 +94,7 @@ namespace DataFeedExamples
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0}", r.OrderId);
-            if (r.Created != null) sb.AppendFormat(" {0} ", r.Created.Value.ToString(_datetimeformat));
+            //if (r.Created != null) sb.AppendFormat(" {0} ", r.Created.Value.ToString(_datetimeformat));
             sb.AppendFormat(" {0}", r.OrderStatus);
             sb.AppendFormat(" {0}", r.ExecutionType);
             //sb.AppendFormat(" {0}", r.OrderType);
@@ -93,13 +106,35 @@ namespace DataFeedExamples
             return sb.ToString();
         }
 
-        private double TryGetOpenPrice(string symbol, TradeRecordSide side)
+        private void SetResult(string orderId, double value)
+        {
+            if (!_results.ContainsKey(orderId))
+            {
+                var m = new MathList();
+                m.Add(value);
+                _results.Add(orderId, m);
+            }
+            else
+            {
+                _results[orderId].Add(value);
+            }
+        }
+
+        private double TryGetOpenPrice(string symbol, TradeRecordSide side, int points = 0)
         {
             double price = 0;
             if (side == TradeRecordSide.Buy)
                 this.Feed.Cache.TryGetAsk(symbol, out price);
             else
                 this.Feed.Cache.TryGetBid(symbol, out price);
+
+            if (points != 0)
+            {
+                var symbolInfo = this.Feed.Cache.Symbols.FirstOrDefault(s => s.Name == symbol);
+                if (symbolInfo != null)
+                    price = price + Math.Pow(10, -symbolInfo.Precision) * points;
+            }
+
             return price;
         }
 
@@ -110,11 +145,10 @@ namespace DataFeedExamples
             TradeRecordSide side = TradeRecordSide.Buy;
             double price = TryGetOpenPrice(symbol, side);
 
-            Console.WriteLine();
-            Console.WriteLine("{0} SendMarketOrder: {1} {2} {3} at {4}", DateTime.UtcNow.ToString(_datetimeformat), side, volume, symbol, price);
-
-            var tr = this.Trade.Server.SendOrder(symbol, TradeCommand.Market, side, price, volume, null, null, null, null);
-            _positions.Add(tr.OrderId);
+            DateTime sendTime = _controlTime = DateTime.UtcNow;
+            var tradeRecord = this.Trade.Server.SendOrder(symbol, TradeCommand.Market, side, price, volume, null, null, null, null);
+            _positions.Add(tradeRecord.OrderId);
+            Console.WriteLine("{0} SendMarketOrder(): {1} {2} {3} at {4}", sendTime.ToString(_datetimeformat), side, volume, symbol, price);
         }
 
         private void SendLimitOrder()
@@ -126,18 +160,16 @@ namespace DataFeedExamples
             string symbol = _symbols[0];
             double volume = 100000;
             TradeRecordSide side = TradeRecordSide.Buy;
-            double price = TryGetOpenPrice(symbol, side);
+            double price = TryGetOpenPrice(symbol, side, 5);
 
-            Console.WriteLine();
-            Console.WriteLine("{0} SendIoCOrder: {1} {2} {3} at {4}", DateTime.UtcNow.ToString(_datetimeformat), side, volume, symbol, price);
-
-            var tr = this.Trade.Server.SendOrder(symbol, TradeCommand.IoC, side, price, volume, null, null, null, null);
-            _positions.Add(tr.OrderId);
+            DateTime sendTime = _controlTime = DateTime.UtcNow;
+            var tradeRecord = this.Trade.Server.SendOrder(symbol, TradeCommand.IoC, side, price, volume, null, null, null, null);
+            _positions.Add(tradeRecord.OrderId);
+            Console.WriteLine("{0} SendIoCOrder(): {1} {2} {3} at {4}", sendTime.ToString(_datetimeformat), side, volume, symbol, price);
         }
 
         private void CloseAll()
         {
-            Console.WriteLine("CloseAll()");
             foreach (string id in _positions)
             {
                 this.Trade.Server.ClosePosition(id);
