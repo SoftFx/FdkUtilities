@@ -29,7 +29,7 @@ namespace DataFeedExamples
                 , listNumbers.Count, Mean(), Sd(), Mean()-2*Sd(), Mean() + 2*Sd());
         }
 
-        private double Mean()
+        public double Mean()
         {
             double result = default(double);
             double n = listNumbers.Count;
@@ -38,7 +38,7 @@ namespace DataFeedExamples
             return result;
         }
 
-        private double Sd()
+        public double Sd()
         {
             double result = default(double);
             double mean = Mean();
