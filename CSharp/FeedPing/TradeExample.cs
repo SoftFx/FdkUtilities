@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using SoftFX.Extended;
 using SoftFX.Extended.Events;
 
@@ -12,18 +11,38 @@ namespace DataFeedExamples
 {
     class TradeExample : Example
     {
-        private static string _datetimeformat = "yyyMMdd-hh:mm:ss.fff";
-        private static bool _stop;
-        private static readonly AutoResetEvent TradeIsReady = new AutoResetEvent(false);
-        private static readonly AutoResetEvent PositionCreated = new AutoResetEvent(false);
+        private class Result : Tuple<Stopwatch, List<long>, string>
+        {
+            public Result() : base(new Stopwatch(), new List<long>(), DateTime.UtcNow.ToString(Settings1.Default.DTFormat))
+            {
+                Item1.Start();
+            }
 
-        private readonly Thread _tradeThread = new Thread(TradeThread);
+            public void Register(bool end)
+            {
+                Item2.Add(Item1.ElapsedMilliseconds);
+
+                if (end) Item1.Stop();
+                else Item1.Restart();
+            }
+        }
+
+        private class NewOrder
+        {
+            public TradeCommand Command { get; set; }
+            public string Symbol { get; set; }
+            public double Volume { get; set; }
+            public TradeRecordSide Side { get; set; }
+            public double Price { get; set; }
+        }
+
+        private static readonly AutoResetEvent TradeIsReady = new AutoResetEvent(false);
+
         private AccountInfo _account;
         private string[] _symbols;
         private readonly List<string> _positions = new List<string>();
-        private readonly Dictionary<string, List<long>> _results = new Dictionary<string, List<long>>();
-        private static Stopwatch _stopwatch = new Stopwatch();
-        private static bool _isError;
+        private readonly Dictionary<string, Result> _results = new Dictionary<string, Result>();
+        private static NewOrder _newOrder = null;
 
         public TradeExample(string address, string username, string password) : base(address, username, password)
         {
@@ -61,74 +80,62 @@ namespace DataFeedExamples
 
         private void OnExecutionReport(object sender, ExecutionReportEventArgs e)
         {
-            long elapsed = _stopwatch.ElapsedMilliseconds;
-            SetResult(e.Report.OrderId, elapsed);
-
-            if (e.Report.OrderType == TradeRecordType.Position)
-                PositionCreated.Set();
-
-            _stopwatch.Restart();
+            Result res = null;
+            _results.TryGetValue(e.Report.ClientOrderId, out res);
+            res?.Register(e.Report.OrderType == TradeRecordType.Position);
+            //Console.WriteLine("{0} {1}", opId, e.Report.OrderStatus);
         }
 
         protected override void RunExample()
         {
-            _tradeThread.Start(this);
+            // need to wait for AccountInfo before trade
+            TradeIsReady.WaitOne(TimeSpan.FromSeconds(10));
 
-            Console.WriteLine("Press any key to stop...");
-            Console.ReadKey();
+            int count = Settings1.Default.OrdersCount;
+            Console.Write("\nSend {0} IoC orders: [t] - in isolated threads, otherwise sequentially ", count);
+            bool inthread = Console.ReadKey().KeyChar == 't';
 
-            _stop = true;
-            _tradeThread.Join();
-
-            if (!_isError)
+            _newOrder = new NewOrder
             {
-                MathList[] stats = new MathList[4] {new MathList(), new MathList(), new MathList(), new MathList()};
+                //Command = TradeCommand.IoC,
+                Symbol = _symbols[0],
+                Volume = 100000,
+                Side = TradeRecordSide.Buy,
+                Price = TryGetOpenPrice(_symbols[0], TradeRecordSide.Buy, 10)
+            };
 
-                Console.WriteLine();
-                Console.WriteLine("Order\t| New\t\t| Calculated\t| Filled\t| Calculated");
-                int i = 0;
-                foreach (var result in _results)
-                {
-                    Console.WriteLine("{0}\t| {1}", result.Key, string.Join("\t\t| ", result.Value));
-
-                    stats[0].Add(result.Value[0]);
-                    stats[1].Add(result.Value[1]);
-                    stats[2].Add(result.Value[2]);
-                    stats[3].Add(result.Value[3]);
-                }
-                Console.WriteLine();
-                Console.WriteLine("Mean\t| {0}\t\t| {1}\t\t| {2}\t\t| {3}", stats[0].Mean(), stats[1].Mean(), stats[2].Mean(), stats[3].Mean());
-                Console.WriteLine("Sd\t| {0:F2}\t\t| {1:F2}\t\t| {2:F2}\t\t| {3:F2}", stats[0].Sd(), stats[1].Sd(), stats[2].Sd(), stats[3].Sd());
-
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
-                _stopwatch.Stop();
+            while (count > 0)
+            {
+                if (inthread)
+                    ThreadPool.QueueUserWorkItem(obj => SendIoCOrder());
+                else
+                    SendIoCOrder();
+                count--;
             }
+
+            Console.WriteLine("\nPress any key to stop...");
+            Console.ReadKey();
+            Console.WriteLine();
+            Console.WriteLine("ClOrdId  | Time                  | New    | Calc   | Fill   | Calc   | Total");
+            MathList[] stats = new MathList[5] { new MathList(), new MathList(), new MathList(), new MathList(), new MathList() };
+            foreach (var result in _results)
+            {
+                Console.WriteLine("{0,-8} | {1, -21} | {2} | {3}", result.Key, result.Value.Item3,
+                    string.Join(" | ", result.Value.Item2.Select(v => string.Format("{0,-6}", v))), result.Value.Item2.Sum());
+                stats[0].Add(result.Value.Item2[0]);
+                stats[1].Add(result.Value.Item2[1]);
+                stats[2].Add(result.Value.Item2[2]);
+                stats[3].Add(result.Value.Item2[3]);
+                stats[4].Add(result.Value.Item2.Sum());
+            }
+            Console.WriteLine();
+            Console.WriteLine("{0,-32} | {1,-6} | {2,-6} | {3,-6} | {4,-6} | {5,-6}", "Mean", stats[0].Mean().ToString("F2"), stats[1].Mean().ToString("F2"),
+                stats[2].Mean().ToString("F2"), stats[3].Mean().ToString("F2"), stats[4].Mean().ToString("F2"));
+            Console.WriteLine("{0,-32} | {1,-6} | {2,-6} | {3,-6} | {4,-6} | {5,-6}", "SD", stats[0].Sd().ToString("F2"), stats[1].Sd().ToString("F2"),
+                stats[2].Sd().ToString("F2"), stats[3].Sd().ToString("F2"), stats[4].Sd().ToString("F2"));
+
+            Console.ReadKey();
             CloseAll();
-        }
-
-        private string ExecutionReportToString(ExecutionReport r)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("{0}", r.OrderId);
-            //if (r.Created != null) sb.AppendFormat(" {0} ", r.Created.Value.ToString(_datetimeformat));
-            sb.AppendFormat(" {0}", r.OrderStatus);
-            sb.AppendFormat(" {0}", r.ExecutionType);
-            //sb.AppendFormat(" {0}", r.OrderType);
-            //sb.AppendFormat(" {0}", r.OrderSide);
-            //sb.AppendFormat(" {0}", r.LeavesVolume);
-            //sb.AppendFormat(" {0}", r.Symbol);
-            //sb.AppendFormat(" {0}", r.Price);
-            //if (r.Modified != null) sb.AppendFormat(" {0} ", r.Modified.Value.ToString(_datetimeformat));
-            return sb.ToString();
-        }
-
-        private void SetResult(string orderId, long value)
-        {
-            if (!_results.ContainsKey(orderId))
-                _results.Add(orderId, new List<long> {value});
-            else
-                _results[orderId].Add(value);
         }
 
         private double TryGetOpenPrice(string symbol, TradeRecordSide side, int points = 0)
@@ -149,6 +156,29 @@ namespace DataFeedExamples
             return price;
         }
 
+        private void SendIoCOrder()
+        {
+            bool isError = false;
+            string opId = Guid.NewGuid().GetHashCode().ToString("X");
+            try
+            {
+                _results.Add(opId, new Result());
+                var tradeRecord = this.Trade.Server.SendOrderEx(opId, _newOrder.Symbol, TradeCommand.IoC, _newOrder.Side,
+                    _newOrder.Price, _newOrder.Volume, null, null, null, null);
+                _positions.Add(tradeRecord.OrderId);
+            }
+            catch (Exception ex)
+            {
+                isError = true;
+                Console.WriteLine("SendIoCThread() Exception: {0}", ex.Message);
+            }
+            finally
+            {
+                if (isError) _results.Remove(opId);
+                else Console.WriteLine("SendIoCOrder(): {0} {1}", _results[opId].Item3, opId);
+            }
+        }
+
         private void SendMarketOrder()
         {
             string symbol = _symbols[0];
@@ -157,74 +187,41 @@ namespace DataFeedExamples
             double price = TryGetOpenPrice(symbol, side);
 
             DateTime sendTime = DateTime.UtcNow;
-            var tradeRecord = this.Trade.Server.SendOrder(symbol, TradeCommand.Market, side, price, volume, null, null, null, null);
+            var tradeRecord = this.Trade.Server.SendOrderEx(Trade.GenerateOperationId(), symbol, TradeCommand.Market, side, price, volume, null, null, null, null);
             _positions.Add(tradeRecord.OrderId);
-            Console.WriteLine("SendMarketOrder(): {0} {1} {2} {3} at {4}", sendTime.ToString(_datetimeformat), side, volume, symbol, price);
+            Console.WriteLine("SendMarketOrder(): {0} {1} {2} {3} at {4}", sendTime.ToString(Settings1.Default.DTFormat), side, volume, symbol, price);
         }
 
         private void SendLimitOrder()
         {
         }
 
-        private void SendIoCOrder()
-        {
-            string symbol = _symbols[0];
-            double volume = 100000;
-            TradeRecordSide side = TradeRecordSide.Buy;
-            double price = TryGetOpenPrice(symbol, side, 5);
-
-            _stopwatch.Restart();
-            DateTime sendTime = DateTime.UtcNow;
-            var tradeRecord = this.Trade.Server.SendOrder(symbol, TradeCommand.IoC, side, price, volume, null, null, null, null);
-            _positions.Add(tradeRecord.OrderId);
-            Console.WriteLine("SendIoCOrder(): {0} {1} {2} {3} at {4}", sendTime.ToString(_datetimeformat), side, volume, symbol, price);
-        }
-
         private void CloseAll()
         {
+            Console.Write("\nCloseAll(): ");
             foreach (string id in _positions)
             {
                 this.Trade.Server.ClosePosition(id);
             }
-            Console.WriteLine("CloseAll(): {0} positions closed", _positions.Count);
+            Console.Write("{0} positions closed\n", _positions.Count);
 
             _positions.Clear();
         }
 
-        private static void TradeThread(object state)
+        private string ExecutionReportToString(ExecutionReport r)
         {
-            try
-            {
-                // need to wait for AccountInfo before trade
-                TradeIsReady.WaitOne(TimeSpan.FromSeconds(10));
-
-                var example = state as TradeExample;
-                if (example == null)
-                    return;
-
-                int count = Settings1.Default.OrdersCount;
-                while (!_stop && count > 0)
-                {
-                    PositionCreated.Reset();
-
-                    example.SendIoCOrder();
-                    //example.SendMarketOrder();
-
-                    PositionCreated.WaitOne();
-
-                    count--;
-                    Thread.Sleep(100);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("TradeThread() Exception: {0}", ex.Message);
-                _isError = true;
-            }
-            finally
-            {
-                Console.WriteLine("TradeThread(): stopped");
-            }
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("{0}", r.OrderId);
+            //if (r.Created != null) sb.AppendFormat(" {0} ", r.Created.Value.ToString(Settings1.Default.DTFormat));
+            sb.AppendFormat(" {0}", r.OrderStatus);
+            sb.AppendFormat(" {0}", r.ExecutionType);
+            //sb.AppendFormat(" {0}", r.OrderType);
+            //sb.AppendFormat(" {0}", r.OrderSide);
+            //sb.AppendFormat(" {0}", r.LeavesVolume);
+            //sb.AppendFormat(" {0}", r.Symbol);
+            //sb.AppendFormat(" {0}", r.Price);
+            //if (r.Modified != null) sb.AppendFormat(" {0} ", r.Modified.Value.ToString(Settings1.Default.DTFormat));
+            return sb.ToString();
         }
     }
 }

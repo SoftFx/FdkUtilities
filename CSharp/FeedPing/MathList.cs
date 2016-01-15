@@ -25,26 +25,20 @@ namespace DataFeedExamples
 
         public override string ToString()
         {
-            return string.Format("mean={1:F1} SD={2:F1} ConfInt={3:F1}:{4:F1} length={0}"
+            return string.Format("Mean={1:F1} SD={2:F1} ConfInt={3:F1}:{4:F1} Length={0}"
                 , listNumbers.Count, Mean(), Sd(), Mean()-2*Sd(), Mean() + 2*Sd());
         }
 
         public double Mean()
         {
-            double result = default(double);
-            double n = listNumbers.Count;
-            foreach (double item in listNumbers)
-                result += item / n;
-            return result;
+            return listNumbers.Sum()/listNumbers.Count;
         }
 
         public double Sd()
         {
-            double result = default(double);
             double mean = Mean();
             double n = listNumbers.Count;
-            foreach (double item in listNumbers)
-                result += (item - mean) * (item - mean) / n;
+            double result = listNumbers.Sum(item => (item - mean)*(item - mean)/n);
             return Math.Sqrt(result);
         }
     }
