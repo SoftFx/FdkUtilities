@@ -1,0 +1,42 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TradePerformance" GeneratedClassName="Config">
+  <Profiles />
+  <Settings>
+    <Setting Name="Server" Type="System.String" Scope="User">
+      <Value Profile="(Default)">tp.dev.soft-fx.eu</Value>
+    </Setting>
+    <Setting Name="Accounts" Type="System.String" Scope="User">
+      <Value Profile="(Default)">999900</Value>
+    </Setting>
+    <Setting Name="Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)">123qwe</Value>
+    </Setting>
+    <Setting Name="Symbols" Type="System.String" Scope="User">
+      <Value Profile="(Default)">EURUSD,USDJPY</Value>
+    </Setting>
+    <Setting Name="Depth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="DTFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">yyyMMdd-hh:mm:ss.fff</Value>
+    </Setting>
+    <Setting Name="OrdersPersist" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="OrdersPerSec" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="StopAfterTime" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="RunSilent" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ResultFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">results.txt</Value>
+    </Setting>
+    <Setting Name="TestsCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
