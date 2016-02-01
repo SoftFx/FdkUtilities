@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FDKTrade")]
+[assembly: AssemblyTitle("TradePerformance")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SoftFX-Bel")]
-[assembly: AssemblyProduct("FDKTrade")]
+[assembly: AssemblyProduct("TradePerformance")]
 [assembly: AssemblyCopyright("Copyright © SoftFX-Bel 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
