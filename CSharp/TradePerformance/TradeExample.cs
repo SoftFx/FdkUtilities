@@ -23,18 +23,19 @@ namespace TradePerformance
 
         private readonly AutoResetEvent TradeIsReady = new AutoResetEvent(false);
 
-        public AccountTestResults AccountTestResults { get; set; }
+        public AccountTradeResults TradeResults { get; private set; }
 
         private int _ordersPerSec;
         private string[] _symbols;
-        private static NewOrder _newOrder = null;
         private bool _stop = false;
         private int _stopAfterTime;
         private List<string> _positions = new List<string>();
+        private int _ordersPersist;
 
-        public TradeExample(string address, string username, string password, int ordersPerSec, int stopAfterTime) : base(address, username, password)
+        public TradeExample(string address, string username, string password, int ordersPerSec, int ordersPersist, int stopAfterTime) : base(address, username, password)
         {
             _ordersPerSec = ordersPerSec;
+            _ordersPersist = ordersPersist;
             _stopAfterTime = stopAfterTime;
 
             this.Feed.Logon += FeedOnLogon;
@@ -70,16 +71,16 @@ namespace TradePerformance
 
         private void OnAccountInfo(object sender, AccountInfoEventArgs e)
         {
-            AccountTestResults = new AccountTestResults(e.Information.AccountId, _ordersPerSec);
+            TradeResults = new AccountTradeResults(e.Information.AccountId, _ordersPerSec);
             TradeIsReady.Set();
         }
 
         private void OnExecutionReport(object sender, ExecutionReportEventArgs e)
         {
             OpenOrderResult res = null;
-            AccountTestResults.Results.TryGetValue(e.Report.ClientOrderId, out res);
+            TradeResults.Results.TryGetValue(e.Report.ClientOrderId, out res);
             res?.Register(e.Report.OrderType == TradeRecordType.Position);
-            Console.WriteLine("{0} {1}", e.Report.ClientOrderId, e.Report.OrderStatus);
+            //Console.WriteLine("{0} {1}", e.Report.ClientOrderId, e.Report.OrderStatus);
         }
 
         protected override void RunExample()
@@ -97,30 +98,30 @@ namespace TradePerformance
             Console.WriteLine();
             Console.WriteLine("{0,-8}  PerSec  New     Calc    Fill    Calc    Total", Username);
             //MathList[] stats = new MathList[5] { new MathList(), new MathList(), new MathList(), new MathList(), new MathList() };
-            foreach (var result in AccountTestResults.Results)
+            foreach (var result in TradeResults.Results)
             {
                 //Console.WriteLine("{0,-8}  {1, -21}  {2}  {3}", result.Key, result.Value.SendingTime,
                 //    String.Join("  ", result.Value.Latencies.Select(v => String.Format("{0,-6}", v))), result.Value.Latencies.Sum());
-                AccountTestResults.Stats[0].Add(result.Value.Latencies[0]);
-                AccountTestResults.Stats[1].Add(result.Value.Latencies[1]);
-                AccountTestResults.Stats[2].Add(result.Value.Latencies[2]);
-                AccountTestResults.Stats[3].Add(result.Value.Latencies[3]);
-                AccountTestResults.Stats[4].Add(result.Value.TotalLatency);
+                TradeResults.Stats[0].Add(result.Value.Latencies[0]);
+                TradeResults.Stats[1].Add(result.Value.Latencies[1]);
+                TradeResults.Stats[2].Add(result.Value.Latencies[2]);
+                TradeResults.Stats[3].Add(result.Value.Latencies[3]);
+                TradeResults.Stats[4].Add(result.Value.TotalLatency);
             }
             Console.WriteLine("{0,-8}  {1,-6}  {2,-6}  {3,-6}  {4,-6}  {5,-6}  {6,-6}", "Mean",
-                AccountTestResults.OrdersPerSec.Mean().ToString("F2"),
-                AccountTestResults.Stats[0].Mean().ToString("F2"),
-                AccountTestResults.Stats[1].Mean().ToString("F2"),
-                AccountTestResults.Stats[2].Mean().ToString("F2"),
-                AccountTestResults.Stats[3].Mean().ToString("F2"),
-                AccountTestResults.Stats[4].Mean().ToString("F2"));
+                TradeResults.OrdersPerSecMean.ToString("F2"),
+                TradeResults.Stats[0].Mean().ToString("F2"),
+                TradeResults.Stats[1].Mean().ToString("F2"),
+                TradeResults.Stats[2].Mean().ToString("F2"),
+                TradeResults.Stats[3].Mean().ToString("F2"),
+                TradeResults.Stats[4].Mean().ToString("F2"));
             Console.WriteLine("{0,-8}  {1,-6}  {2,-6}  {3,-6}  {4,-6}  {5,-6}  {6,-6}", "SD",
-                AccountTestResults.OrdersPerSec.Sd().ToString("F2"),
-                AccountTestResults.Stats[0].Sd().ToString("F2"),
-                AccountTestResults.Stats[1].Sd().ToString("F2"),
-                AccountTestResults.Stats[2].Sd().ToString("F2"),
-                AccountTestResults.Stats[3].Sd().ToString("F2"),
-                AccountTestResults.Stats[4].Sd().ToString("F2"));
+                TradeResults.OrdersPerSecSd.ToString("F2"),
+                TradeResults.Stats[0].Sd().ToString("F2"),
+                TradeResults.Stats[1].Sd().ToString("F2"),
+                TradeResults.Stats[2].Sd().ToString("F2"),
+                TradeResults.Stats[3].Sd().ToString("F2"),
+                TradeResults.Stats[4].Sd().ToString("F2"));
         }
 
         private double TryGetOpenPrice(string symbol, TradeRecordSide side, int points = 0)
@@ -151,10 +152,10 @@ namespace TradePerformance
             double price = TryGetOpenPrice(symbol, side, 10);
             try
             {
-                AccountTestResults.Results.Add(opId, new OpenOrderResult());
+                TradeResults.Results.Add(opId, new OpenOrderResult());
                 var tradeRecord = this.Trade.Server.SendOrderEx(opId, symbol, TradeCommand.IoC, side, price, volume, null, null, null, null);
                 _positions.Add(tradeRecord.OrderId);
-                AccountTestResults.Results[opId].Order = tradeRecord.OrderId;
+                TradeResults.Results[opId].Order = tradeRecord.OrderId;
             }
             catch (Exception ex)
             {
@@ -163,13 +164,13 @@ namespace TradePerformance
             }
             finally
             {
-                if (AccountTestResults.Results.ContainsKey(opId))
+                if (TradeResults.Results.ContainsKey(opId))
                 {
                     if (isError)
-                        AccountTestResults.Results.Remove(opId);
+                        TradeResults.Results.Remove(opId);
                     else
                     {
-                        if (!RunSilent) Console.WriteLine("{0} SendIoCOrder(): {1} {2}", Username, AccountTestResults.Results[opId].SendingTime, opId);
+                        if (!RunSilent) Console.WriteLine("{0} SendIoCOrder(): {1} {2}", Username, TradeResults.Results[opId].SendingTime, opId);
                     }
                 }
             }
@@ -230,7 +231,7 @@ namespace TradePerformance
             // need to wait for AccountInfo before trade
             TradeIsReady.WaitOne(TimeSpan.FromSeconds(10));
 
-            int ordersCount = Config.Default.OrdersPersist;
+            int ordersCount = _ordersPersist;
             
 
             Barrier.SignalAndWait();
@@ -241,18 +242,18 @@ namespace TradePerformance
             {
                 int ordersPerSec = 0;
 
-                AccountTestResults.OrdersPerSecRestart();
+                TradeResults.OrdersPerSecRestart();
                 while (ordersPerSec < _ordersPerSec)
                 {
                     SendIoCOrder();
-                    if (AccountTestResults.OrdersPerSecStop)
+                    if (TradeResults.OrdersPerSecStop)
                         break;
                     ordersPerSec++;
                 }
-                AccountTestResults.OrdersPerSec.Add(ordersPerSec);
+                TradeResults.AddOrdersPerSec(ordersPerSec);
 
-                if (AccountTestResults.Watcher.ElapsedMilliseconds < 1000)
-                    Thread.Sleep((int) (1000 - AccountTestResults.Watcher.ElapsedMilliseconds));
+                if (TradeResults.OrdersPerSecLeftTime > 0)
+                    Thread.Sleep(TradeResults.OrdersPerSecLeftTime);
 
                 if (_stopAfterTime > 0 && (DateTime.Now - startedTime >= TimeSpan.FromMinutes(_stopAfterTime)))
                     break;

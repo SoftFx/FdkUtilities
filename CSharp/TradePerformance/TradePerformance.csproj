@@ -63,7 +63,7 @@
     <Compile Include="OpenOrderResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AccountTestResults.cs" />
+    <Compile Include="AccountTradeResults.cs" />
     <Compile Include="RunTest.cs" />
     <Compile Include="TradeExample.cs" />
   </ItemGroup>

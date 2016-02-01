@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TradePerformance
 {
-    internal class AccountTestResults
+    internal class AccountTradeResults
     {
         private Stopwatch _watcher = new Stopwatch();
         private MathList _ordersPerSec = new MathList();
@@ -22,9 +22,14 @@ namespace TradePerformance
             get { return _results; }
         }
 
-        public MathList OrdersPerSec
+        public double OrdersPerSecMean
         {
-            get { return _ordersPerSec; }
+            get { return _ordersPerSec.Mean(); }
+        }
+
+        public double OrdersPerSecSd
+        {
+            get { return _ordersPerSec.Sd(); }
         }
 
         public MathList[] Stats
@@ -32,17 +37,17 @@ namespace TradePerformance
             get { return _stats; }
         }
 
-        public Stopwatch Watcher
-        {
-            get { return _watcher; }
-        }
-
         public bool OrdersPerSecStop
         {
             get { return _watcher.ElapsedMilliseconds >= 1000; }
         }
 
-        public AccountTestResults(string account, int ordersPerSec)
+        public int OrdersPerSecLeftTime
+        {
+            get { return 1000 - (int)_watcher.ElapsedMilliseconds; }
+        }
+
+        public AccountTradeResults(string account, int ordersPerSec)
         {
             Account = account;
             OrdersPerSecInitial = ordersPerSec;
@@ -51,6 +56,11 @@ namespace TradePerformance
         public void OrdersPerSecRestart()
         {
             _watcher.Restart();
+        }
+
+        public void AddOrdersPerSec(int ordersPerSec)
+        {
+            _ordersPerSec.Add(ordersPerSec);
         }
     }
 }

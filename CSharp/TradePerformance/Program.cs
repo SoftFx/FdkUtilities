@@ -11,7 +11,7 @@ namespace TradePerformance
         {
             using (StreamWriter writer = File.CreateText(Config.Default.ResultFile))
             {
-                writer.WriteLine("TestNumber,Account,OrdPerSec,OrdPerSec_Mean,OrdPerSec_Sd,Order,New,Calculated1,Filled,Calculated2");
+                writer.WriteLine("TestNumber,Account,OrdPerSec,OrdPerSec_Mean,Order,New,Calculated1,Filled,Calculated2,Total");
                 var orderspersecs = Config.Default.OrdersPerSec.Split(',').Select(int.Parse);
                 foreach (int orderspersec in orderspersecs)
                 {
@@ -19,17 +19,18 @@ namespace TradePerformance
                     for (int i = 1; i <= count; i++)
                     {
                         var accounts = Config.Default.Accounts.Split(',');
-                        var runTest = new RunTest(i, Config.Default.Server, accounts, Config.Default.Password, orderspersec, Config.Default.StopAfterTime);
+                        var runTest = new RunTest(i, Config.Default.Server, accounts, Config.Default.Password, orderspersec, Config.Default.OrdersPersist, Config.Default.StopAfterTime);
                         runTest.Run();
 
                         foreach (var test in runTest.TradeTests)
                         {
-                            foreach (var result in test.AccountTestResults.Results)
+                            foreach (var result in test.TradeResults.Results)
                             {
-                                writer.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7}", i, test.AccountTestResults.Account,
+                                writer.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
+                                    i,
+                                    test.TradeResults.Account,
                                     orderspersec,
-                                    test.AccountTestResults.OrdersPerSec.Mean(),
-                                    test.AccountTestResults.OrdersPerSec.Sd(),
+                                    test.TradeResults.OrdersPerSecMean.ToString("F2"),
                                     result.Value.Order,
                                     string.Join(",", result.Value.Latencies.Take(4)),
                                     result.Value.TotalLatency);
