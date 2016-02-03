@@ -153,7 +153,7 @@ namespace TradePerformance
             }
         }
 
-        protected static bool RunSilent { get { return Config.Default.RunSilent; } }
+        protected static bool ShowDebug { get { return Config.Default.ShowDebug; } }
 
         protected string Username { get; }
         protected DataFeed Feed { get; private set; }
@@ -214,12 +214,12 @@ namespace TradePerformance
 
         void OnLogon(object sender, LogonEventArgs e)
         {
-            if (!RunSilent) Console.WriteLine("{0} OnLogon(): {1}", Username, e);
+            if (ShowDebug) Console.WriteLine("{0} OnLogon(): {1}", Username, e);
         }
 
         void OnLogout(object sender, LogoutEventArgs e)
         {
-            if (!RunSilent) Console.WriteLine("{0} OnLogout(): {1}", Username, e);
+            if (ShowDebug) Console.WriteLine("{0} OnLogout(): {1}", Username, e);
         }
 
         void OnSymbolInfo(object sender, SymbolInfoEventArgs e)
@@ -236,7 +236,7 @@ namespace TradePerformance
 
         void OnNotify(object sender, NotificationEventArgs e)
         {
-            if (!RunSilent) Console.WriteLine("{0} OnNotify(): {1}", Username, e);
+            if (ShowDebug) Console.WriteLine("{0} OnNotify(): {1}", Username, e);
         }
 
         #endregion

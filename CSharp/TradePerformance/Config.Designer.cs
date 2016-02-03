@@ -37,7 +37,7 @@ namespace TradePerformance {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("999900")]
+        [global::System.Configuration.DefaultSettingValueAttribute("999900,999901,999902")]
         public string Accounts {
             get {
                 return ((string)(this["Accounts"]));
@@ -73,7 +73,7 @@ namespace TradePerformance {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int Depth {
             get {
                 return ((int)(this["Depth"]));
@@ -109,7 +109,7 @@ namespace TradePerformance {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1,5,10,15,20,25,50,75")]
         public string OrdersPerSec {
             get {
                 return ((string)(this["OrdersPerSec"]));
@@ -133,13 +133,13 @@ namespace TradePerformance {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool RunSilent {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowDebug {
             get {
-                return ((bool)(this["RunSilent"]));
+                return ((bool)(this["ShowDebug"]));
             }
             set {
-                this["RunSilent"] = value;
+                this["ShowDebug"] = value;
             }
         }
         

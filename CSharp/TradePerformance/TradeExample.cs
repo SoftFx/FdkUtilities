@@ -5,6 +5,7 @@ using System.Threading;
 using SoftFX.Extended;
 using SoftFX.Extended.Events;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace TradePerformance
 {
@@ -56,17 +57,17 @@ namespace TradePerformance
 
         private void OnLogon(object sender, LogonEventArgs e)
         {
-            if (!RunSilent) Console.WriteLine("{0} OnLogon(): Trade {1}", Username, e);
+            if (ShowDebug) Console.WriteLine("{0} OnLogon(): Trade {1}", Username, e);
         }
 
         private void OnLogout(object sender, LogoutEventArgs e)
         {
-            if (!RunSilent) Console.WriteLine("{0} OnLogout(): Trade {1}", Username, e);
+            if (ShowDebug) Console.WriteLine("{0} OnLogout(): Trade {1}", Username, e);
         }
 
         private void OnSessionInfo(object sender, SessionInfoEventArgs e)
         {
-            if (!RunSilent) Console.WriteLine("{0} TradingSessionId = {1}", Username, e.Information.TradingSessionId);
+            if (ShowDebug) Console.WriteLine("{0} TradingSessionId = {1}", Username, e.Information.TradingSessionId);
         }
 
         private void OnAccountInfo(object sender, AccountInfoEventArgs e)
@@ -142,7 +143,7 @@ namespace TradePerformance
             return price;
         }
 
-        private void SendIoCOrder()
+        private bool SendIoCOrder()
         {
             bool isError = false;
             string opId = Guid.NewGuid().GetHashCode().ToString("X");
@@ -156,11 +157,13 @@ namespace TradePerformance
                 var tradeRecord = this.Trade.Server.SendOrderEx(opId, symbol, TradeCommand.IoC, side, price, volume, null, null, null, null);
                 _positions.Add(tradeRecord.OrderId);
                 TradeResults.Results[opId].Order = tradeRecord.OrderId;
+                if (ShowDebug) Console.WriteLine("{0} SendIoCOrder(): {1} {2}", Username, TradeResults.Results[opId].SendingTime, opId);
+                return true;
             }
             catch (Exception ex)
             {
                 isError = true;
-                if (!RunSilent) Console.WriteLine("{0} SendIoCThread() Exception: {1}", Username, ex.Message);
+                if (ShowDebug) Console.WriteLine("{0} SendIoCThread() Exception: {1}", Username, ex.Message);
             }
             finally
             {
@@ -168,12 +171,9 @@ namespace TradePerformance
                 {
                     if (isError)
                         TradeResults.Results.Remove(opId);
-                    else
-                    {
-                        if (!RunSilent) Console.WriteLine("{0} SendIoCOrder(): {1} {2}", Username, TradeResults.Results[opId].SendingTime, opId);
-                    }
                 }
             }
+            return false;
         }
 
         private void SendMarketOrder()
@@ -185,7 +185,7 @@ namespace TradePerformance
 
             DateTime sendTime = DateTime.UtcNow;
             var tradeRecord = this.Trade.Server.SendOrderEx(Trade.GenerateOperationId(), symbol, TradeCommand.Market, side, price, volume, null, null, null, null);
-            if (!RunSilent) Console.WriteLine("SendMarketOrder(): {0} {1} {2} {3} at {4}", sendTime.ToString(Config.Default.DTFormat), side, volume, symbol, price);
+            if (ShowDebug) Console.WriteLine("SendMarketOrder(): {0} {1} {2} {3} at {4}", sendTime.ToString(Config.Default.DTFormat), side, volume, symbol, price);
         }
 
         private void SendLimitOrder()
@@ -207,7 +207,7 @@ namespace TradePerformance
                     // ignored
                 }
             }
-            if (!RunSilent) Console.Write("\n{0} CloseAll(): {1} positions closed, {2} failed\n", Username, closed, _positions.Count - closed);
+            if (ShowDebug) Console.Write("\n{0} CloseAll(): {1} positions closed, {2} failed\n", Username, closed, _positions.Count - closed);
         }
 
         private string ExecutionReportToString(ExecutionReport r)
@@ -236,24 +236,28 @@ namespace TradePerformance
 
             Barrier.SignalAndWait();
 
+            Stopwatch opsStopwatch = new Stopwatch();
             DateTime startedTime = DateTime.Now;
 
             while (!_stop)
             {
-                int ordersPerSec = 0;
+                int sentOrders = 0;
 
-                TradeResults.OrdersPerSecRestart();
-                while (ordersPerSec < _ordersPerSec)
+                opsStopwatch.Restart();
+                while (sentOrders < _ordersPerSec)
                 {
-                    SendIoCOrder();
-                    if (TradeResults.OrdersPerSecStop)
+                    if (SendIoCOrder())
+                        sentOrders++;
+                    Thread.Sleep(1200);
+                    if (opsStopwatch.ElapsedMilliseconds >= 1000)
                         break;
-                    ordersPerSec++;
                 }
-                TradeResults.AddOrdersPerSec(ordersPerSec);
 
-                if (TradeResults.OrdersPerSecLeftTime > 0)
-                    Thread.Sleep(TradeResults.OrdersPerSecLeftTime);
+                double ops = sentOrders > 1 ? sentOrders : sentOrders*1000.0/opsStopwatch.ElapsedMilliseconds;
+                TradeResults.AddOrdersPerSec(ops);
+
+                if (1000 - (int)opsStopwatch.ElapsedMilliseconds > 0)
+                    Thread.Sleep(1000 - (int)opsStopwatch.ElapsedMilliseconds);
 
                 if (_stopAfterTime > 0 && (DateTime.Now - startedTime >= TimeSpan.FromMinutes(_stopAfterTime)))
                     break;
@@ -266,7 +270,6 @@ namespace TradePerformance
                         try
                         {
                             this.Trade.Server.ClosePosition(id);
-                            if (!RunSilent) Console.WriteLine("{0} closed position #{1}", Username, id);
                             _positions.Remove(id);
                         }
                         catch
@@ -274,6 +277,7 @@ namespace TradePerformance
                             // ignored
                         }
                     }
+                    if (ShowDebug) Console.WriteLine("{0} closed {1} positions", Username, posToClose.Count);
                 }
             }
 
