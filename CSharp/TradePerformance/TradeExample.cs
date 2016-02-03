@@ -248,7 +248,6 @@ namespace TradePerformance
                 {
                     if (SendIoCOrder())
                         sentOrders++;
-                    Thread.Sleep(1200);
                     if (opsStopwatch.ElapsedMilliseconds >= 1000)
                         break;
                 }
