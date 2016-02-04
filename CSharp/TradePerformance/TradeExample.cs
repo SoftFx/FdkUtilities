@@ -250,7 +250,10 @@ namespace TradePerformance
                         break;
                 }
 
-                double ops = sentOrders > 1 ? sentOrders : sentOrders*1000.0/opsStopwatch.ElapsedMilliseconds;
+                double ops;
+                ops = sentOrders < _ordersPerSec
+                    ? (sentOrders > 1 ? sentOrders : sentOrders*1000.0/opsStopwatch.ElapsedMilliseconds)
+                    : sentOrders;
                 TradeResults.AddOrdersPerSec(ops);
 
                 if (1000 - (int)opsStopwatch.ElapsedMilliseconds > 0)
