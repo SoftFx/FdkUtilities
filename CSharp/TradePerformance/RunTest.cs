@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace TradePerformance
 {
@@ -33,6 +31,8 @@ namespace TradePerformance
 
         public void Run()
         {
+            Console.WriteLine("Test #{0}, Accounts {{{1}}}, OPS = {2}", TestNumber, string.Join(",", _accounts), _ordersPerSec);
+
             // new barier with _accounts.Count participants + this thread
             TradeExample.Barrier = new Barrier(_accounts.Count + 1);
 
@@ -43,12 +43,10 @@ namespace TradePerformance
                 TradeTests.Add(trade);
             }
 
-            Thread.Sleep(1000);
             // signal to start trading
             TradeExample.Barrier.SignalAndWait();
 
-            Thread.Sleep(1000);
-            // waiting for stop trading
+            // waiting for accounts stop trading
             TradeExample.Barrier.SignalAndWait();
 
             TradeTests.ForEach(t => t.Dispose());

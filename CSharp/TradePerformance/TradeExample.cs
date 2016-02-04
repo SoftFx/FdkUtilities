@@ -230,10 +230,8 @@ namespace TradePerformance
         {
             // need to wait for AccountInfo before trade
             TradeIsReady.WaitOne(TimeSpan.FromSeconds(10));
-
-            int ordersCount = _ordersPersist;
             
-
+            // signal that account is ready to start trading
             Barrier.SignalAndWait();
 
             Stopwatch opsStopwatch = new Stopwatch();
@@ -260,28 +258,11 @@ namespace TradePerformance
 
                 if (_stopAfterTime > 0 && (DateTime.Now - startedTime >= TimeSpan.FromMinutes(_stopAfterTime)))
                     break;
-
-                if (_positions.Count > ordersCount)
-                {
-                    var posToClose = _positions.Take(_positions.Count - ordersCount).ToList();
-                    foreach (var id in posToClose)
-                    {
-                        try
-                        {
-                            this.Trade.Server.ClosePosition(id);
-                            _positions.Remove(id);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-                    }
-                    if (ShowDebug) Console.WriteLine("{0} closed {1} positions", Username, posToClose.Count);
-                }
             }
 
             CloseAll();
 
+            // signal that account stopped trading
             Barrier.SignalAndWait();
         }
     }

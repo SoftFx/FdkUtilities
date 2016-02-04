@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace TradePerformance
+﻿namespace TradePerformance
 {
     using System;
     using System.IO;
