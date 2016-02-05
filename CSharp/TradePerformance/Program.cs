@@ -18,8 +18,11 @@ namespace TradePerformance
                     int count = Config.Default.TestsCount;
                     for (int i = 1; i <= count; i++)
                     {
-                        var accounts = Config.Default.Accounts.Split(',');
-                        var runTest = new RunTest(i, Config.Default.Server, accounts, Config.Default.Password, orderspersec, Config.Default.OrdersPersist, Config.Default.StopAfterTime);
+                        var accounts = Config.Default.Accounts.Split(',').ToList();
+                        int accountsNumber = i <= accounts.Count ? i : accounts.Count;
+                        var accountsToTest = accounts.Take(accountsNumber).ToList();
+
+                        var runTest = new RunTest(i, Config.Default.Server, accountsToTest, Config.Default.Password, orderspersec, Config.Default.OrdersPersist, Config.Default.StopAfterTime);
                         runTest.Run();
 
                         foreach (var test in runTest.TradeTests)
