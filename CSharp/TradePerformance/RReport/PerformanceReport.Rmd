@@ -9,29 +9,37 @@ output: html_document
 require(data.table)
 require(ggplot2)
 
-d<-read.csv("https://raw.githubusercontent.com/SoftFx/FdkUtilities/master/CSharp/TradePerformance/Results/TradePerformance_Development_1.txt", header=T, sep = ",")
+file <- paste(tempdir(), "_ptempdownload.zip", sep =  "")
+download.file("https://github.com/SoftFx/FdkUtilities/blob/master/CSharp/TradePerformance/Results/TradePerformance_Development_1.zip?raw=true", file, mode="wb") 
+d<-read.csv(unzip(file), header=T)
 d<-as.data.table(d)
-```
+d<-d[TestNumber==2,]
 
-Summary execution time ~ requested orders per second
-```{r}
-si<-rbind( tapply(d$Total, d$OrdPerSec, length), 
-           tapply(d$Total, d$OrdPerSec, min),
-           tapply(d$Total, d$OrdPerSec, mean), 
-           tapply(d$Total, d$OrdPerSec, median), 
-           tapply(d$Total, d$OrdPerSec, max), 
-           tapply(d$Total, d$OrdPerSec, sd))
-rownames(si)<-c("length", "min", "mean", "median", "max", "sd")
-si<-round(t(si))
-ggplot(melt(si), aes(Var1, value)) + geom_line() + facet_grid(Var2 ~ ., scales = "free") + xlab("Requested Orders Per Second")
 ```
 
 Number of executed orders by account and ReqPerSec
 ```{r}
-table(d$Account, d$OrdPerSec, d$TestNumber)
+table(d$Account, d$OPS_Req, d$TestNumber)
 ```
+
+Summary execution time ~ requested orders per second
+```{r}
+d[,OPS_Req:=OPS_Req * TestNumber]
+d[,OPS_Mean:=OPS_Mean * TestNumber]
+
+si<-rbind( tapply(d$Total, d$OPS_Req, length), 
+           tapply(d$Total, d$OPS_Req, min),
+           tapply(d$Total, d$OPS_Req, mean), 
+           tapply(d$Total, d$OPS_Req, median), 
+           tapply(d$Total, d$OPS_Req, max), 
+           tapply(d$Total, d$OPS_Req, sd))
+rownames(si)<-c("length", "min", "mean", "median", "max", "sd")
+si<-round(t(si))
+ggplot(melt(si), aes(Var1, value)) + geom_point() + facet_grid(Var2 ~ ., scales = "free") + xlab("Requested Orders Per Second")
+```
+
 
 Scaling
 ```{r}
-ggplot( d, aes(x=OrdPerSec, y=OrdPerSec_Mean)) + geom_line() + geom_abline(intercept = 0, slope = 1,  size=2, color='red')
+ggplot( d, aes(x=OPS_Req, y=OPS_Mean)) + geom_line() + geom_abline(intercept = 0, slope = 1,  size=2, color='red')
 ```
