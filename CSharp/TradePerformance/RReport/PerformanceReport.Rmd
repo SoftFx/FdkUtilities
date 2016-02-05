@@ -9,7 +9,9 @@ output: html_document
 require(data.table)
 require(ggplot2)
 
-d<-read.csv("https://raw.githubusercontent.com/SoftFx/FdkUtilities/master/CSharp/TradePerformance/Results/results_no_logging.txt", header=T, sep = ",")
+file <- paste(tempdir(), "_ptempdownload.zip", sep =  "")
+download.file("https://github.com/SoftFx/FdkUtilities/blob/master/CSharp/TradePerformance/Results/TradePerformance_Development_1.zip?raw=true", file, mode="wb") 
+d<-read.csv(unzip(file), header=T)
 d<-as.data.table(d)
 d<-d[TestNumber==2,]
 
