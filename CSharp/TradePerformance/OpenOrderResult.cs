@@ -13,7 +13,7 @@ namespace TradePerformance
         public List<long> Latencies { get; set; }
         public long TotalLatency
         {
-            get { return Latencies.Any() ? Latencies.Sum() : 0; }
+            get { return Latencies.Any() ? Latencies.Take(4).Sum() : 0; }
         }
 
         public OpenOrderResult()

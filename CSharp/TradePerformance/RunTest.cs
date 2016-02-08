@@ -31,7 +31,7 @@ namespace TradePerformance
 
         public void Run()
         {
-            Console.WriteLine("Test #{0}, Accounts ({1}), OPS = {2}", TestNumber, string.Join(",", _accounts), _ordersPerSec);
+            Console.WriteLine("OPS = {2}: Test #{0}, Accounts ({1})", TestNumber, string.Join(",", _accounts), _ordersPerSec);
 
             // new barier with _accounts.Count participants + this thread
             TradeExample.Barrier = new Barrier(_accounts.Count + 1);
