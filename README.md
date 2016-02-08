@@ -4,3 +4,4 @@ This project contains simple and usefull applications to work with quotes based 
  - QuotesExporter
  - RealTimeLevel2
  - FeedPing
+ - TradePerformance
