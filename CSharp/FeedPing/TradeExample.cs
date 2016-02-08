@@ -51,6 +51,10 @@ namespace DataFeedExamples
             this.TradeEnabled = true;
             this.Trade.Logon += OnLogon;
             this.Trade.Logout += OnLogout;
+            this.Trade.SessionInfo += delegate(object sender, SessionInfoEventArgs e)
+            {
+                Console.WriteLine("TradingSessionId = {0}", e.Information.TradingSessionId);
+            };
             this.Trade.AccountInfo += OnAccountInfo;
             this.Trade.ExecutionReport += OnExecutionReport;
         }
@@ -92,8 +96,13 @@ namespace DataFeedExamples
             TradeIsReady.WaitOne(TimeSpan.FromSeconds(10));
 
             int count = Settings1.Default.OrdersCount;
-            Console.Write("\nSend {0} IoC orders: [t] - in isolated threads, otherwise sequentially ", count);
-            bool inthread = Console.ReadKey().KeyChar == 't';
+            Console.Write("\nSend {0} IoC orders: [t] - in threads, [s] - sequentially, [any] - exit ", count);
+            var key = Console.ReadKey();
+            Console.WriteLine();
+
+            if (key.KeyChar != 't' && key.KeyChar != 's')
+                return;
+            bool inthread = key.KeyChar == 't';
 
             _newOrder = new NewOrder
             {
@@ -101,16 +110,24 @@ namespace DataFeedExamples
                 Symbol = _symbols[0],
                 Volume = 100000,
                 Side = TradeRecordSide.Buy,
-                Price = TryGetOpenPrice(_symbols[0], TradeRecordSide.Buy, 10)
+                Price = TryGetOpenPrice(_symbols[0], TradeRecordSide.Buy, 20)
             };
 
-            while (count > 0)
+            if (inthread)
             {
-                if (inthread)
+                while (count > 0)
+                {
                     ThreadPool.QueueUserWorkItem(obj => SendIoCOrder());
-                else
+                    count--;
+                }
+            }
+            else
+            {
+                while (count > 0)
+                {
                     SendIoCOrder();
-                count--;
+                    count--;
+                }
             }
 
             Console.WriteLine("\nPress any key to stop...");
@@ -163,6 +180,7 @@ namespace DataFeedExamples
             try
             {
                 _results.Add(opId, new Result());
+                //_newOrder.Price = TryGetOpenPrice(_newOrder.Symbol, _newOrder.Side, 10);
                 var tradeRecord = this.Trade.Server.SendOrderEx(opId, _newOrder.Symbol, TradeCommand.IoC, _newOrder.Side,
                     _newOrder.Price, _newOrder.Volume, null, null, null, null);
                 _positions.Add(tradeRecord.OrderId);
@@ -174,8 +192,13 @@ namespace DataFeedExamples
             }
             finally
             {
-                if (isError) _results.Remove(opId);
-                else Console.WriteLine("SendIoCOrder(): {0} {1}", _results[opId].Item3, opId);
+                if (_results.ContainsKey(opId))
+                {
+                    if (isError)
+                        _results.Remove(opId);
+                    else
+                        Console.WriteLine("SendIoCOrder(): {0} {1}", _results[opId].Item3, opId);
+                }
             }
         }
 
@@ -201,7 +224,9 @@ namespace DataFeedExamples
             Console.Write("\nCloseAll(): ");
             foreach (string id in _positions)
             {
+                Console.Write(id);
                 this.Trade.Server.ClosePosition(id);
+                Console.SetCursorPosition(Console.CursorLeft-7, Console.CursorTop);
             }
             Console.Write("{0} positions closed\n", _positions.Count);
 

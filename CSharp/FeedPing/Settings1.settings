@@ -23,5 +23,8 @@
     <Setting Name="OrdersCount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
+    <Setting Name="DTFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">yyyMMdd-hh:mm:ss.fff</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

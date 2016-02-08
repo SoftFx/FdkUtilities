@@ -94,5 +94,17 @@ namespace DataFeedExamples {
                 this["OrdersCount"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("yyyMMdd-hh:mm:ss.fff")]
+        public string DTFormat {
+            get {
+                return ((string)(this["DTFormat"]));
+            }
+            set {
+                this["DTFormat"] = value;
+            }
+        }
     }
 }

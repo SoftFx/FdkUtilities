@@ -52,11 +52,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SoftFX.Extended.Net, Version=1.17.214.0, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
-      <HintPath>..\packages\SoftFX.FDK.1.17.256\lib\net46\SoftFX.Extended.Net.dll</HintPath>
+      <HintPath>..\packages\SoftFX.FDK.1.17.288\lib\net46\SoftFX.Extended.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SoftFX.Lrp, Version=1.17.0.0, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
-      <HintPath>..\packages\SoftFX.FDK.1.17.256\lib\net46\SoftFX.Lrp.dll</HintPath>
+      <HintPath>..\packages\SoftFX.FDK.1.17.288\lib\net46\SoftFX.Lrp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
