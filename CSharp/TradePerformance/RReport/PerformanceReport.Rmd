@@ -10,16 +10,32 @@ require(data.table)
 require(ggplot2)
 
 file <- paste(tempdir(), "_ptempdownload.zip", sep =  "")
-download.file("https://github.com/SoftFx/FdkUtilities/blob/master/CSharp/TradePerformance/Results/TradePerformance_Development_1.zip?raw=true", file, mode="wb") 
-d<-read.csv(unzip(file), header=T)
+download.file("https://raw.githubusercontent.com/SoftFx/FdkUtilities/master/CSharp/TradePerformance/Results/20160210-120400_Staging_FIXLogsOFF_TTSNone.txt", file, mode="wb") 
+#d<-read.csv(unzip(file), header=T)
+d<-read.csv(file, header=T)
 d<-as.data.table(d)
-d<-d[TestNumber==2,]
+d<-d[TestNumber==1,]
 
 ```
 
 Number of executed orders by account and ReqPerSec
 ```{r}
 table(d$Account, d$OPS_Req, d$TestNumber)
+
+      print("Top longest execution")    
+      print(d[order(-Total)][1:10,])
+      
+      print("Worst New execution")    
+      print(d[order(-New)][1:10,])
+      
+      print("Worst Calculated1 execution")    
+      print(d[order(-Calculated1)][1:10,])
+      
+      print("Worst Filled execution")    
+      print(d[order(-Filled)][1:10,])
+      
+      print("Proprtion delay for each execution staqge")
+      print ( apply( apply(d[,7:10, with=F], 1, prop.table), 1, mean) )
 ```
 
 Summary execution time ~ requested orders per second
