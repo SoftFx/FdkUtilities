@@ -154,17 +154,5 @@ namespace TradePerformance {
                 this["ResultFile"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int TestsCount {
-            get {
-                return ((int)(this["TestsCount"]));
-            }
-            set {
-                this["TestsCount"] = value;
-            }
-        }
     }
 }

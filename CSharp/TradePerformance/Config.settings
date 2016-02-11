@@ -35,8 +35,5 @@
     <Setting Name="ResultFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">results.txt</Value>
     </Setting>
-    <Setting Name="TestsCount" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
-    </Setting>
   </Settings>
 </SettingsFile>
