@@ -1,16 +1,53 @@
-require(data.table)
+library(ggplot2)
+d<-ttFeed.TickBestHistory("EURCHF", Sys.Date()-1, Sys.Date())
+d[,spread:=ask-bid]
+ggplot(d, aes(spread)) + geom_histogram() + geom_density()
+qqnorm(d$spread)
+########################################
 
-d<-read.csv("https://raw.githubusercontent.com/SoftFx/FdkUtilities/master/CSharp/TradePerformance/Results/TradePerformance_Development_1.txt", header=T, sep = ",")
-d<-as.data.table(d)
+library(AppliedPredictiveModeling)
+data(concrete)
+library(caret)
+set.seed(1000)
+inTrain = createDataPartition(mixtures$CompressiveStrength, p = 3/4)[[1]]
+training = mixtures[ inTrain,]
+testing = mixtures[-inTrain,]
 
-si<-rbind( tapply(d$Total, d$OrdPerSec, length), 
-           tapply(d$Total, d$OrdPerSec, min),
-           tapply(d$Total, d$OrdPerSec, mean), 
-           tapply(d$Total, d$OrdPerSec, median), 
-           tapply(d$Total, d$OrdPerSec, max), 
-           tapply(d$Total, d$OrdPerSec, sd))
-rownames(si)<-c("length", "min", "mean", "median", "max", "sd")
-si<-round(t(si))
+training$F_Age<- cut2(training$Age, g = 3)
+ggplot(training, aes(x=seq_along(CompressiveStrength), y=CompressiveStrength)) + geom_point(aes(colour=F_Age)) 
+#####################
+# 4
+####################
+library(caret)
+library(AppliedPredictiveModeling)
+set.seed(3433)
+data(AlzheimerDisease)
+adData = data.frame(diagnosis,predictors)
+inTrain = createDataPartition(adData$diagnosis, p = 3/4)[[1]]
+training = adData[ inTrain,]
+testing = adData[-inTrain,]
 
+d<-training[, grep( "^[Ii][Ll].*", names(training)) ]
+pp<- preProcess(d, method=c("center", "scale", "pca"), thresh=0.9)
+pp
+####################################
+# 5
+#######
+library(caret)
+library(AppliedPredictiveModeling)
+set.seed(3433)
+data(AlzheimerDisease)
+adData = data.frame(diagnosis,predictors)
+inTrain = createDataPartition(adData$diagnosis, p = 3/4)[[1]]
+training = adData[ inTrain,]
+testing = adData[-inTrain,]
 
-ggplot( d, aes(x=OrdPerSec, y=OrdPerSec_Mean)) + geom_line() + geom_smooth(method = "lm", se = FALSE)#geom_abline(intercept = 0, slope = 1, col="Red") )
+d<-as.data.table(training[, grep( "^[Ii][Ll].*", names(training)) ])
+d[,diagnosis:=training$diagnosis]
+
+testing1 <- as.data.table(testing[, grep( "^[Ii][Ll].*", names(testing)) ])
+testing1[,diagnosis:=testing$diagnosis]
+
+non_pca_model <- train(diagnosis ~ ., data = d, method="glm")
+non_pca_result <- confusionMatrix(testing1[, diagnosis], predict(non_pca_model, testing1[, -13, with=FALSE]))
+non_pca_result
