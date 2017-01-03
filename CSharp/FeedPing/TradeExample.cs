@@ -182,7 +182,7 @@ namespace DataFeedExamples
                 _results.Add(opId, new Result());
                 //_newOrder.Price = TryGetOpenPrice(_newOrder.Symbol, _newOrder.Side, 10);
                 var tradeRecord = this.Trade.Server.SendOrderEx(opId, _newOrder.Symbol, TradeCommand.IoC, _newOrder.Side,
-                    _newOrder.Price, _newOrder.Volume, null, null, null, null);
+                    _newOrder.Price, _newOrder.Volume, null, null, null, null, null, null, null, null);
                 _positions.Add(tradeRecord.OrderId);
             }
             catch (Exception ex)
@@ -210,7 +210,7 @@ namespace DataFeedExamples
             double price = TryGetOpenPrice(symbol, side);
 
             DateTime sendTime = DateTime.UtcNow;
-            var tradeRecord = this.Trade.Server.SendOrderEx(Trade.GenerateOperationId(), symbol, TradeCommand.Market, side, price, volume, null, null, null, null);
+            var tradeRecord = this.Trade.Server.SendOrderEx(Trade.GenerateOperationId(), symbol, TradeCommand.Market, side, price, volume, null, null, null, null, null, null, null, null);
             _positions.Add(tradeRecord.OrderId);
             Console.WriteLine("SendMarketOrder(): {0} {1} {2} {3} at {4}", sendTime.ToString(Settings1.Default.DTFormat), side, volume, symbol, price);
         }

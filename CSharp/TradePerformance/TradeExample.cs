@@ -154,7 +154,7 @@ namespace TradePerformance
             try
             {
                 TradeResults.Results.Add(opId, new OpenOrderResult());
-                var tradeRecord = this.Trade.Server.SendOrderEx(opId, symbol, TradeCommand.IoC, side, price, volume, null, null, null, null);
+                var tradeRecord = this.Trade.Server.SendOrderEx(opId, symbol, TradeCommand.IoC, side, price, volume, null, null, null, null, null, null, null, null);
                 _positions.Add(tradeRecord.OrderId);
                 TradeResults.Results[opId].Order = tradeRecord.OrderId;
                 if (ShowDebug) Console.WriteLine("{0} SendIoCOrder(): {1} {2}", Username, TradeResults.Results[opId].SendingTime, opId);
@@ -184,7 +184,7 @@ namespace TradePerformance
             double price = TryGetOpenPrice(symbol, side);
 
             DateTime sendTime = DateTime.UtcNow;
-            var tradeRecord = this.Trade.Server.SendOrderEx(Trade.GenerateOperationId(), symbol, TradeCommand.Market, side, price, volume, null, null, null, null);
+            var tradeRecord = this.Trade.Server.SendOrderEx(Trade.GenerateOperationId(), symbol, TradeCommand.Market, side, price, volume, null, null, null, null, null, null, null, null);
             if (ShowDebug) Console.WriteLine("SendMarketOrder(): {0} {1} {2} {3} at {4}", sendTime.ToString(Config.Default.DTFormat), side, volume, symbol, price);
         }
 

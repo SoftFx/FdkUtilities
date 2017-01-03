@@ -129,7 +129,7 @@
                 this.fixConnectionStringBuilder.Port = Convert.ToInt32(this.m_port.Text);
                 this.fixConnectionStringBuilder.SecureConnection = this.m_ssl.Checked;
                 var connectionString = this.fixConnectionStringBuilder.ToString();
-                var dataFeed = new DataFeed(connectionString);
+                var dataFeed = new DataFeed(connectionString, "QuotesDownloader");
                 dataFeed.Logon += this.OnLogon;
                 dataFeed.Logout += this.OnLogout;
                 dataFeed.SymbolInfo += this.OnSymbolInfo;

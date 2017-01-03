@@ -43,7 +43,7 @@
                 this.fixConnectionStringBuilder.SecureConnection = m_ssl.Checked;
 
                 var connectionString = this.fixConnectionStringBuilder.ToString();
-                this.datafeed = new DataFeed(connectionString);
+                this.datafeed = new DataFeed(connectionString, "RealTimeLevel2");
                 this.datafeed.SymbolInfo += this.OnSymbolInfo;
                 this.datafeed.Tick += this.OnTick;
                 this.datafeed.Start();
