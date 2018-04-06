@@ -12,7 +12,7 @@ namespace QuotesDownloader {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -63,13 +63,16 @@ namespace QuotesDownloader {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <FixConnectionStringBuilder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <Username />
+  <Password />
+  <DeviceId />
+  <AppId>FDK</AppId>
+  <AppSessionId />
   <FixVersion>FIX.4.4</FixVersion>
   <Address />
   <Port>5003</Port>
   <SenderCompId />
   <TargetCompId>EXECUTOR</TargetCompId>
-  <Username />
-  <Password />
   <SecureConnection>true</SecureConnection>
   <FixLogDirectory />
   <FixEventsFileName />
@@ -77,6 +80,12 @@ namespace QuotesDownloader {
   <DecodeLogFixMessages>true</DecodeLogFixMessages>
   <ProtocolVersion>ext.1.7</ProtocolVersion>
   <ExcludeMessagesFromLogs>W</ExcludeMessagesFromLogs>
+  <EnableNetworkStatistics>false</EnableNetworkStatistics>
+  <ProxyType />
+  <ProxyAddress />
+  <ProxyPort>0</ProxyPort>
+  <ProxyUserName />
+  <ProxyPassword />
 </FixConnectionStringBuilder>")]
         public global::SoftFX.Extended.FixConnectionStringBuilder ConnectionParams {
             get {

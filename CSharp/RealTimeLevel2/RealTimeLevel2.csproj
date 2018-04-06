@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RealTimeLevel2</RootNamespace>
     <AssemblyName>RealTimeLevel2</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -47,13 +47,11 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SoftFX.Extended.Net">
-      <HintPath>..\packages\SoftFX.FDK.1.18.699\lib\net40\SoftFX.Extended.Net.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SoftFX.Extended.Net, Version=1.33.1.2, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
+      <HintPath>..\packages\SoftFX.FDK.1.33.1208\lib\net40\SoftFX.Extended.Net.dll</HintPath>
     </Reference>
-    <Reference Include="SoftFX.Lrp">
-      <HintPath>..\packages\SoftFX.FDK.1.18.699\lib\net40\SoftFX.Lrp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SoftFX.Lrp, Version=1.17.0.0, Culture=neutral, PublicKeyToken=4233fb54369c191f, processorArchitecture=MSIL">
+      <HintPath>..\packages\SoftFX.FDK.1.33.1208\lib\net40\SoftFX.Lrp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
