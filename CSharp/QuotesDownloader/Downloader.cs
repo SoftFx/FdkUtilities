@@ -14,7 +14,7 @@
             this.thread = new Thread(ThreadMethod);
         }
 
-        public Downloader(DataFeed dataFeed, Type storageType, String location, String symbol, DateTime from, DateTime to, Boolean includeLevel2)
+        public Downloader(DataFeed dataFeed, Type storageType, String location, String symbol, DateTime from, DateTime to, Boolean includeLevel2, int retries)
             : this()
         {
             this.dataFeed = dataFeed;
@@ -24,9 +24,10 @@
             this.from = from;
             this.to = to;
             this.includeLevel2 = includeLevel2;
+            this.retries = retries;
         }
 
-        public Downloader(DataFeed dataFeed, Type storageType, String location, String symbol, DateTime from, DateTime to, PriceType priceType, BarPeriod period)
+        public Downloader(DataFeed dataFeed, Type storageType, String location, String symbol, DateTime from, DateTime to, PriceType priceType, BarPeriod period, int retries)
             : this()
         {
             this.dataFeed = dataFeed;
@@ -37,6 +38,7 @@
             this.to = to;
             this.priceType = priceType;
             this.period = period;
+            this.retries = retries;
         }
 
         #region Properties
@@ -92,22 +94,27 @@
                 this.AdjustTimes(ref from, ref to);
                 Directory.CreateDirectory(this.location);
 
-                var attempt = 1;
+                var retries = 0;
 
                 using (var storage = new DataFeedStorage(this.location, this.storageType, this.dataFeed, true))
                 {
                     for (var current = from; this.continueMonitoring && (current < to);)
                     {
-                        this.Log("Synchronizing = {0}; attempt = {1}", current, attempt);
+                        if (retries == 0)
+                            this.Log("Synchronizing = {0}", current);
+                        else
+                            this.Log("Synchronizing = {0}; retries = {1}", current, retries);
 
                         var next = this.Download(storage, current);
                         if (current == next)
                         {
-                            attempt++;
+                            if (retries == this.retries)
+                                break;
+                            retries++;
                         }
                         else
                         {
-                            attempt = 1;
+                            retries = 0;
                             current = next;
                             this.Log("Synchronized");
                         }
@@ -204,6 +211,7 @@
         readonly Boolean includeLevel2;
         readonly PriceType priceType;
         readonly BarPeriod period;
+        readonly int retries;
         Thread thread;
 
         #endregion

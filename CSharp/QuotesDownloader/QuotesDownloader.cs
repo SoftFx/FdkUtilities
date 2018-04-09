@@ -75,6 +75,7 @@
             if (!short.TryParse(st, out port) || (port <= 0))
             {
                 var message = string.Format("You should enter a positive number from 1 to {0}", short.MaxValue);
+                this.m_toolTip.ToolTipTitle = "Invalid port number";
                 this.m_toolTip.Show(message, this.m_port);
                 e.Cancel = true;
             }
@@ -83,6 +84,25 @@
         void OnPortKeyDown(object sender, KeyEventArgs e)
         {
             this.m_toolTip.Hide(this.m_port);
+        }
+
+        void OnRetriesValidating(object sender, CancelEventArgs e)
+        {
+            var st = this.m_retries.Text;
+            var port = 0;
+
+            if (!Int32.TryParse(st, out port) || (port <= 0))
+            {
+                var message = string.Format("You should enter a positive integer number");
+                this.m_toolTip.ToolTipTitle = "Invalid retries number";
+                this.m_toolTip.Show(message, this.m_retries);
+                e.Cancel = true;
+            }
+        }
+
+        void OnRetriesKeyDown(object sender, KeyEventArgs e)
+        {
+            this.m_toolTip.Hide(this.m_retries);
         }
 
         void OnLogClear(object sender, EventArgs e)
@@ -109,7 +129,7 @@
                 }
             }
         }
-        
+
         void OnConnection(object sender, EventArgs e)
         {
             if (this.datafeed == null)
@@ -247,14 +267,16 @@
                 var symbol = this.m_symbols.Text;
                 var from = this.m_dateAndTimeFrom.Value;
                 var to = this.m_dateAndTimeTo.Value;
+                int retries = 10;
+                Int32.TryParse(this.m_retries.Text, out retries);
 
                 if (this.m_quotesType.SelectedIndex == 0)
                 {
-                    this.downloader = new Downloader(this.datafeed, storageType, location, symbol, from, to, false);
+                    this.downloader = new Downloader(this.datafeed, storageType, location, symbol, from, to, false, retries);
                 }
                 else if (this.m_quotesType.SelectedIndex == 1)
                 {
-                    this.downloader = new Downloader(this.datafeed, storageType, location, symbol, from, to, true);
+                    this.downloader = new Downloader(this.datafeed, storageType, location, symbol, from, to, true, retries);
                 }
                 else
                 {
@@ -271,7 +293,7 @@
                     var stBarPeriod = match.Groups[2].Value;
 
                     var barPeriod = new BarPeriod(stBarPeriod);
-                    this.downloader = new Downloader(this.datafeed, storageType, location, symbol, from, to, priceType, barPeriod);
+                    this.downloader = new Downloader(this.datafeed, storageType, location, symbol, from, to, priceType, barPeriod, retries);
 
                 }
 
